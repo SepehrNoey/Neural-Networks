@@ -167,6 +167,11 @@ class Tensor:
         # Hint use -_tensor_neg function
         neg = _tensor_neg(self)
         return _tensor_slice(neg, idcs)
+    
+    def __transpose__(self):
+        return _transpose(self)
+    
+
         
     def backward(self, grad: 'Tensor' = None) -> None:
         if grad is None:
@@ -178,6 +183,21 @@ class Tensor:
         for dependency in self.depends_on:
             backward_grad = dependency.grad_fn(grad.data)
             dependency.tensor.backward(Tensor(backward_grad))
+
+
+def _transpose(t: Tensor) -> Tensor:
+    data = t.data.T
+    req_grad = t.requires_grad
+
+    if req_grad:
+        def grad_fn(grad: np.ndarray) -> np.ndarray:
+            return grad.T
+
+        depends_on = [Dependency(t, grad_fn)]
+    else:
+        depends_on = []
+
+    return Tensor(data=data, requires_grad=req_grad, depends_on=depends_on)
 
 
 def _tensor_sum(t: Tensor) -> Tensor:

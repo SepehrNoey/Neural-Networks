@@ -4,19 +4,8 @@ from tensors import Tensor
 # TODO: implement xavier_initializer, zero_initializer
 
 def _calculate_fan_in_fan_out(tensor : Tensor):
-    if tensor.data.ndim < 2:
-        raise ValueError("Can't compute fan-in and fan-out for tensor with less than 2 dimensions")
-
-    num_input_feature_maps = np.size(tensor.data, 1)
-    num_output_feature_maps = np.size(tensor.data, 0)
-    receptive_field_size = 1
-    if tensor.data.ndim > 2:
-        for s in tensor.data.shape[2:]:
-            receptive_field_size *= s
-    
-    fan_in = num_input_feature_maps * receptive_field_size
-    fan_out = num_output_feature_maps * receptive_field_size
-
+    fan_in = np.size(tensor.data, 1)
+    fan_out = np.size(tensor.data, 0)
     return fan_in, fan_out
 
 # we can use this function for calculating gain to use with xavier_initializer or he_initializer
@@ -57,10 +46,6 @@ def xavier_initializer(shape, gain = 1.0): # xavier normal
     return np.random.normal(0, std, size=shape)
 
 def he_initializer(shape, gain): # kaiming he normal
-    if 0 in shape:
-        print("Warning: Initializing zero-element tensors is a no-op")
-        return
-    
     fan = _calculate_correct_fan(Tensor(np.ones(shape)))
     std = gain / np.sqrt(fan)
     return np.random.normal(0, std, size=shape)

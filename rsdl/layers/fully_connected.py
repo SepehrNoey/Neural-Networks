@@ -15,7 +15,7 @@ class Linear:
         # TODO initialize weight by initializer function (zero mode)
         if self.need_bias:
             self.bias = Tensor(
-                data=initializer((out_channels,), mode='zero'),
+                data=initializer((1, out_channels), mode='zero'),
                 requires_grad=True
             )
 

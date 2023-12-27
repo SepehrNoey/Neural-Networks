@@ -1,5 +1,5 @@
 import numpy as np
-from tensors import Tensor
+from rsdl.tensors import Tensor
 
 # TODO: implement xavier_initializer, zero_initializer
 

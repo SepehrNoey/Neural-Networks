@@ -176,6 +176,8 @@ class Tensor:
                 grad = Tensor(1.0)
             else:
                 raise RuntimeError("grad must be specified for non-0-tensor")
+        if self.grad is None:
+            self.grad = Tensor(0.0) # may need to change
         self.grad.data = self.grad.data + grad.data
         for dependency in self.depends_on:
             backward_grad = dependency.grad_fn(grad.data)

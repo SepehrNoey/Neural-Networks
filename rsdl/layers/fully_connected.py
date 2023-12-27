@@ -22,9 +22,9 @@ class Linear:
 
     def forward(self, inp):
         # TODO:implement forward propagation
-        output = tensors._transpose(self.weight) @ inp
+        output = inp @ self.weight
         if self.need_bias:
-            output += self.bias
+            output = output + self.bias
         
         return output
     

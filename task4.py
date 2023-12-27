@@ -37,6 +37,8 @@ for epoch in range(200):
         predicted = inputs @ w + b
 
         actual = y[start:end]
+        actual.data = actual.data.reshape(-1, 1)
+        
         # TODO: calcualte MSE loss
         loss = loss_functions.MeanSquaredError(predicted, actual)
         

@@ -1,5 +1,6 @@
 from rsdl import Tensor
 from rsdl.layers import initializer
+from rsdl import tensors
 
 class Linear:
 
@@ -21,7 +22,7 @@ class Linear:
 
     def forward(self, inp):
         # TODO:implement forward propagation
-        output = self.weight.T @ inp
+        output = tensors._transpose(self.weight) @ inp
         if self.need_bias:
             output += self.bias
         

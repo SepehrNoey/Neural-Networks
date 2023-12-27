@@ -1,9 +1,11 @@
 from rsdl import Tensor
+import numpy as np
 
 def MeanSquaredError(preds: Tensor, actual: Tensor):
     # TODO : implement mean squared error
+    actual = Tensor(data=np.reshape(actual.data, (-1, 1)), requires_grad=actual.requires_grad, depends_on=actual.depends_on)
     err = actual - preds
-    return (err ** 2).sum() / len(actual.data)
+    return (err ** 2).sum() * (Tensor(1 / len(actual.data), requires_grad=actual.requires_grad, depends_on=actual.depends_on))
 
 def CategoricalCrossEntropy(preds: Tensor, actual: Tensor):
     # TODO : imlement categorical cross entropy 

@@ -168,9 +168,6 @@ class Tensor:
         neg = _tensor_neg(self)
         return _tensor_slice(neg, idcs)
     
-    def __transpose__(self):
-        return _transpose(self)
-    
 
         
     def backward(self, grad: 'Tensor' = None) -> None:
@@ -249,7 +246,7 @@ def _tensor_exp(t: Tensor) -> Tensor:
 
 def _tensor_pow(t: Tensor, power:float) -> Tensor:
     # TODO
-    data = np.pow(t.data, power)
+    data = np.power(t.data, power)
     req_grad = t.requires_grad
     
     if req_grad:
@@ -328,8 +325,7 @@ def _add(t1: Tensor, t2: Tensor) -> Tensor:
 def _sub(t1: Tensor, t2: Tensor) -> Tensor:
     # TODO: implement sub
     # Hint: a-b = a+(-b)
-    new_t2 = Tensor(data=t2.data * -1, requires_grad=t2.requires_grad, depends_on=t2.depends_on)
-    return _add(t1, new_t2)
+    return _add(t1, _tensor_neg(t2))
 
 def _mul(t1: Tensor, t2: Tensor) -> Tensor:
     # Done ( Don't change )

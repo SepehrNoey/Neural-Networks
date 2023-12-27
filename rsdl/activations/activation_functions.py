@@ -1,15 +1,26 @@
 from rsdl import Tensor, Dependency
 import numpy as np
+import rsdl.tensors as rs
 
 def Sigmoid(t: Tensor) -> Tensor:
     # TODO: implement sigmoid function
     # hint: you can do it using function you've implemented (not directly define grad func)
-    return None
+    neg_exp_matrix = rs._tensor_neg(t).exp()
+    exp_plus_one = neg_exp_matrix + 1.0 # may have bug here
+    sig = Tensor(data=(1 / exp_plus_one), requires_grad=exp_plus_one.requires_grad, depends_on=exp_plus_one.depends_on)
+
+    return sig
 
 def Tanh(t: Tensor) -> Tensor:
     # TODO: implement tanh function
     # hint: you can do it using function you've implemented (not directly define grad func)
-    return None
+    exp_matrix = t.exp()
+    neg_exp_matrix = rs._tensor_neg(t).exp()
+    numer = exp_matrix - neg_exp_matrix
+    denom = exp_matrix + neg_exp_matrix
+    tanh = (numer) * Tensor(data=(1 / denom.data), requires_grad=denom.requires_grad, depends_on=denom.depends_on)
+
+    return tanh
 
 def Softmax(t: Tensor) -> Tensor:
     # TODO: implement softmax function
@@ -24,13 +35,13 @@ def Relu(t: Tensor) -> Tensor:
     # TODO: implement relu function
 
     # use np.maximum
-    data = ...
+    data = np.maximum(0, t.data) 
+    req_grad = t.requires_grad
 
-    req_grad = ...
     if req_grad:
         def grad_fn(grad: np.ndarray):
             # use np.where
-            return None
+            return np.where(t.data > 0, grad,)
         
         depends_on = [Dependency(t, grad_fn)]
     else:
@@ -45,12 +56,12 @@ def LeakyRelu(t: Tensor,leak=0.05) -> Tensor:
     """
     # TODO: implement leaky_relu function
     
-    data = ...
-    
-    req_grad = ...
+    data = np.where(t.data > 0, t.data, leak * t.data)
+    req_grad = t.requires_grad
+
     if req_grad:
         def grad_fn(grad: np.ndarray):
-            return None
+            return np.where(t.data > 0, grad, leak * grad)
         
         depends_on = [Dependency(t, grad_fn)]
     else:

@@ -7,11 +7,13 @@ import numpy as np
 from rsdl.layers import Linear
 from rsdl.activations import Relu
 from rsdl.optim import SGD
+from rsdl.optim import Adam
 from rsdl.tensors import Tensor
 from rsdl.losses import CategoricalCrossEntropy
 from rsdl.losses import MeanSquaredError
 import time
 import sys
+import pickle
 
 
 sys.setrecursionlimit(1000000)
@@ -51,8 +53,9 @@ model = {"layers": [
          ]
         }
 
-optimizer = SGD(layers=model["layers"], learning_rate=0.01)
-batch_size = 32
+# optimizer = SGD(layers=model["layers"], learning_rate=0.1)
+optimizer = Adam(layers=model["layers"], learning_rate=0.1)
+batch_size = 100
 
 for epoch in range(20):
     epoch_loss = 0.0
@@ -84,6 +87,21 @@ for epoch in range(20):
         print("loss:", loss)
     
     print("epoch ended")
-    time.sleep(3.0)
+    # now evaluation
+    print("now, evaluating...")
+    correct = 0.0
+    for start in range(0, test_data.shape[0], batch_size):
+        end = start + batch_size
+        inputs = test_data[start:end]
+        
+        a1_raw = model["layers"][0](inputs)
+        a1 = model["activations"][0](a1_raw)
+        predicted = model["layers"][1](a1)
+        predicted = np.argmax(predicted.data, axis=1)
+        actual = train_label[start:end]
+        actual = actual.data
+        for i in range(actual.shape[0]):
+            if predicted[i] == actual[i]:
+                correct += 1
 
-print("now here")
+    print("Accuracy is: ", (correct / 10000.0) * 100)

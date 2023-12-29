@@ -4,6 +4,9 @@ import numpy as np
 from rsdl import Tensor
 from rsdl.layers import Linear
 from rsdl.optim import SGD
+from rsdl.optim import Adam
+from rsdl.optim import Momentum
+from rsdl.optim import RMSprop
 from rsdl.losses import loss_functions
 import sys
 
@@ -16,7 +19,11 @@ y = X @ coef + 5
 model = Linear(3, 1)
 
 # TODO: define an optimizer using SGD() class 
-optimizer = SGD([model], 0.0015)
+
+# optimizer = SGD([model], 0.1) # 100 epoch
+# optimizer = Adam([model], learning_rate=0.1) # 50 epoch
+# optimizer = Momentum([model], learning_rate=0.1) # 100 epoch
+optimizer = RMSprop([model], learning_rate=0.05) # 100 epoch
 
 # TODO: print weight and bias of linear layer
 print(f"layer weights: {model.weight}\n")
@@ -25,7 +32,7 @@ print(f"layer bias: {model.bias}\n")
 learning_rate = optimizer.learning_rate
 batch_size = 10
 
-for epoch in range(200):
+for epoch in range(100):
     
     epoch_loss = 0.0
     print(f"epoch is: {epoch}")

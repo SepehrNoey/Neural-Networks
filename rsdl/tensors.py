@@ -1,5 +1,8 @@
 import numpy as np
 from typing import List, NamedTuple, Callable, Optional, Union
+from sklearn.preprocessing import MinMaxScaler
+
+epsilon = 1e-15
 
 class Dependency(NamedTuple):
     tensor: 'Tensor'
@@ -12,7 +15,7 @@ def ensure_array(arrayable: Arrayable) -> np.ndarray:
     if isinstance(arrayable, np.ndarray):
         return arrayable
     else:
-        return np.array(arrayable)
+        return np.array(arrayable, dtype=np.float64) # changed here
     
 Tensorable = Union[float, 'Tensor', np.ndarray]
 
@@ -176,11 +179,16 @@ class Tensor:
                 grad = Tensor(1.0)
             else:
                 raise RuntimeError("grad must be specified for non-0-tensor")
+        # if self.grad is None:
+        #     self.grad = Tensor(1.0) # added this dummy code here
         self.grad.data = self.grad.data + grad.data
         for dependency in self.depends_on:
             backward_grad = dependency.grad_fn(grad.data)
             dependency.tensor.backward(Tensor(backward_grad))
 
+def normalize(t: Tensor):
+    scaler = MinMaxScaler()
+    t.data = scaler.fit_transform(t.data)
 
 def _transpose(t: Tensor) -> Tensor:
     data = t.data.T
@@ -214,12 +222,13 @@ def _tensor_sum(t: Tensor) -> Tensor:
 
 def _tensor_log(t: Tensor) -> Tensor:
     # TODO
-    data = np.log(t.data)
+    # normalize(t)
+    data = np.log(t.data + epsilon)
     req_grad = t.requires_grad
     
     if req_grad:
         def grad_fn(grad: np.ndarray):
-            return grad * (1 / t.data) * np.ones_like(t.data)
+            return grad * (1 / (t.data + epsilon)) * np.ones_like(t.data)
         
         depends_on = [Dependency(t, grad_fn)]
 
@@ -230,6 +239,7 @@ def _tensor_log(t: Tensor) -> Tensor:
 
 def _tensor_exp(t: Tensor) -> Tensor:
     # TODO
+    # normalize(t)
     data = np.exp(t.data)
     req_grad = t.requires_grad
     
@@ -246,6 +256,7 @@ def _tensor_exp(t: Tensor) -> Tensor:
 
 def _tensor_pow(t: Tensor, power:float) -> Tensor:
     # TODO
+    # normalize(t)
     data = np.power(t.data, power)
     req_grad = t.requires_grad
     
@@ -329,6 +340,8 @@ def _sub(t1: Tensor, t2: Tensor) -> Tensor:
 
 def _mul(t1: Tensor, t2: Tensor) -> Tensor:
     # Done ( Don't change )
+    # normalize(t1)
+    # normalize(t2)
     data = t1.data * t2.data
     req_grad = t1.requires_grad or t2.requires_grad
     depends_on : List[Dependency] = []
@@ -364,6 +377,8 @@ def _mul(t1: Tensor, t2: Tensor) -> Tensor:
 
 def _matmul(t1: Tensor, t2: Tensor) -> Tensor:
     # TODO: implement matrix multiplication
+    # normalize(t1)
+    # normalize(t2)
     data = t1.data @ t2.data
     requires_grad = t1.requires_grad or t2.requires_grad
 

@@ -10,10 +10,11 @@ This project separates to six parts. At the beginning, we used PyTorch to implem
 
 Sample images from MNIST:
 
+![](https://github.com/SepehrNoey/Neural-Networks-Framework-from-Scratch/blob/main/MNIST-Samples.jpg)
 
 Train and validation accuracy of trained CNN:
 
-
+![](https://github.com/SepehrNoey/Neural-Networks-Framework-from-Scratch/blob/main/loss_mnist_cnn.png)
 
 ### Task 3: Brain Tumor Recognition
 - Model: **ResNet50**
@@ -22,8 +23,11 @@ Train and validation accuracy of trained CNN:
 
 Dataset sample:
 
+![](https://github.com/SepehrNoey/Neural-Networks-Framework-from-Scratch/blob/main/brain_sample_data.png)
+
 Training loss plot:
 
+![](https://github.com/SepehrNoey/Neural-Networks-Framework-from-Scratch/blob/main/resnet50_loss_function.png)
 
 ### Task 4 to 5: Implementing Framework for Neural Networks Implementation
 - **Tensor Class**: Included mathematical operations and ability to save gradients
